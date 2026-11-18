@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GTA VI Leonida Transparent Hebrew Overlay</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@500;700;900&family=Rubik:ital,wght@0,700;0,900;1,800;1,900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --neon-pink: #ff2a85;
+    --neon-cyan: #00f5d4;
+    --neon-amber: #ff9e00;
+    --neon-red: #ff4d6d;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+  }
+
+  body {
+    background: transparent;
+    font-family: 'Heebo', sans-serif;
+    overflow: hidden;
+    padding: 16px;
+  }
+
+  /* Transparent Floating HUD (Only Top Line Visible) */
+  .leonida-hud {
+    display: inline-flex;
+    flex-direction: column;
+    background: transparent;
+    padding: 14px 12px 10px 12px;
+    position: relative;
+  }
+
+  /* Glowing Sunset Top Line */
+  .leonida-hud::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink), var(--neon-amber));
+    box-shadow: 0 0 14px rgba(255, 42, 133, 0.8), 0 0 22px rgba(0, 245, 212, 0.45);
+  }
+
+  /* Main Stats Row */
+  .stats-row {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* DAY BADGE (Transparent) */
+  .day-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 6px;
+  }
+
+  .day-title {
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    color: var(--neon-amber);
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.95), 0 0 10px rgba(255, 158, 0, 0.7);
+  }
+
+  .day-num {
+    font-family: 'Rubik', sans-serif;
+    font-style: italic;
+    font-weight: 900;
+    font-size: 36px;
+    line-height: 1;
+    color: #ffffff;
+    text-shadow: 0 3px 8px rgba(0, 0, 0, 0.95), 0 0 14px rgba(255, 42, 133, 0.85);
+    transition: transform 0.15s ease;
+  }
+
+  /* TIMER BLOCK */
+  .timer-block {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .timer-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 2px;
+  }
+
+  .status-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--neon-cyan);
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.95), 0 0 10px rgba(0, 245, 212, 0.6);
+  }
+
+  .live-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--neon-cyan);
+    box-shadow: 0 0 8px var(--neon-cyan);
+    animation: pulse 1.4s infinite;
+  }
+
+  .paused .live-dot {
+    background: #ff4d6d;
+    box-shadow: none;
+    animation: none;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.35; transform: scale(0.8); }
+  }
+
+  .today-pill {
+    font-size: 12px;
+    font-weight: 800;
+    color: #ffffff;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.95);
+  }
+
+  .today-pill span {
+    font-family: 'Rubik', sans-serif;
+    font-weight: 800;
+    color: #ffffff;
+    direction: ltr;
+    display: inline-block;
+  }
+
+  .total-clock {
+    font-family: 'Rubik', sans-serif;
+    font-style: italic;
+    font-weight: 900;
+    font-size: 36px;
+    line-height: 1.05;
+    color: #ffffff;
+    direction: ltr;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 1px;
+    text-shadow: 0 3px 10px rgba(0, 0, 0, 0.98), 0 0 4px rgba(0, 0, 0, 0.9);
+  }
+
+  .paused .total-clock {
+    color: #ff8fa3;
+  }
+
+  /* SEPARATOR */
+  .sep {
+    width: 2px;
+    height: 44px;
+    background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
+  }
+
+  /* COUNTER BLOCKS (MISSIONS & DEATHS) */
+  .stat-block {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .stat-top {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 800;
+    margin-bottom: 2px;
+  }
+
+  .missions-top {
+    color: var(--neon-pink);
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.95), 0 0 10px rgba(255, 42, 133, 0.65);
+  }
+
+  .deaths-top {
+    color: var(--neon-red);
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.95), 0 0 10px rgba(255, 77, 109, 0.7);
+  }
+
+  .stat-count-row {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+
+  .stat-num {
+    font-family: 'Rubik', sans-serif;
+    font-style: italic;
+    font-weight: 900;
+    font-size: 36px;
+    line-height: 1.05;
+    color: #ffffff;
+    text-shadow: 0 3px 10px rgba(0, 0, 0, 0.98), 0 0 4px rgba(0, 0, 0, 0.9);
+    transition: transform 0.15s ease;
+  }
+
+  .stat-sub {
+    font-size: 13px;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.95);
+  }
+
+  /* INTEGRATED CONTROL DRAWER (Only appears when hovering in OBS Interact) */
+  .control-drawer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 6px;
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    margin-top: 0;
+    padding: 0 8px;
+    border-radius: 8px;
+    background: rgba(13, 9, 24, 0.88);
+    transition: all 0.22s ease;
+  }
+
+  .leonida-hud:hover .control-drawer {
+    max-height: 80px;
+    opacity: 1;
+    margin-top: 10px;
+    padding: 6px 8px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+  }
+
+  .ctrl-btn {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    font-family: 'Heebo', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 4px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  .ctrl-btn:hover {
+    background: var(--neon-pink);
+    border-color: var(--neon-pink);
+  }
+
+  .ctrl-btn.start-btn {
+    background: rgba(0, 245, 212, 0.2);
+    border-color: var(--neon-cyan);
+    color: var(--neon-cyan);
+  }
+
+  .ctrl-btn.start-btn:hover {
+    background: var(--neon-cyan);
+    color: #000;
+  }
+
+  .ctrl-btn.danger:hover {
+    background: #e63946;
+    border-color: #e63946;
+  }
+
+  .pop {
+    transform: scale(1.18);
+  }
+</style>
+</head>
+<body>
+
+<div class="leonida-hud" id="hudRoot">
+  <div class="stats-row">
+    <!-- DAY -->
+    <div class="day-badge">
+      <span class="day-title">יום</span>
+      <span class="day-num" id="dayVal">1</span>
+    </div>
+
+    <!-- TIMER -->
+    <div class="timer-block" id="timerBlock">
+      <div class="timer-top">
+        <span class="status-label"><i class="live-dot"></i> זמן משחק</span>
+        <span class="today-pill">היום: <span id="todayVal">0:00</span></span>
+      </div>
+      <div class="total-clock" id="totalVal">0:00:00</div>
+    </div>
+
+    <div class="sep"></div>
+
+    <!-- MISSIONS -->
+    <div class="stat-block">
+      <div class="stat-top missions-top">✔ משימות</div>
+      <div class="stat-count-row">
+        <span class="stat-num" id="missionsVal">0</span>
+        <span class="stat-sub">הושלמו</span>
+      </div>
+    </div>
+
+    <div class="sep"></div>
+
+    <!-- DEATHS -->
+    <div class="stat-block">
+      <div class="stat-top deaths-top">☠ מוות</div>
+      <div class="stat-count-row">
+        <span class="stat-num" id="deathsVal">0</span>
+        <span class="stat-sub">פעמים</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- BUILT-IN HOVER CONTROLS -->
+  <div class="control-drawer">
+    <button type="button" class="ctrl-btn start-btn" id="toggleBtn">השהה</button>
+    <button type="button" class="ctrl-btn" id="dayPlusBtn">יום +</button>
+    <button type="button" class="ctrl-btn" id="dayMinusBtn">יום -</button>
+    <button type="button" class="ctrl-btn" id="missionPlusBtn">משימה +</button>
+    <button type="button" class="ctrl-btn" id="missionMinusBtn">משימה -</button>
+    <button type="button" class="ctrl-btn" id="deathPlusBtn">מוות +</button>
+    <button type="button" class="ctrl-btn" id="deathMinusBtn">מוות -</button>
+    <button type="button" class="ctrl-btn danger" id="resetTodayBtn">איפוס היום</button>
+    <button type="button" class="ctrl-btn danger" id="resetAllBtn">איפוס הכל</button>
+  </div>
+</div>
+
+<script>
+(function() {
+  const STORAGE_KEY = 'gta6_leonida_state_v2';
+  const channel = ('BroadcastChannel' in window) ? new BroadcastChannel('gta6_leonida_bus') : null;
+
+  function getTodayDateString() {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  }
+
+  let state = {
+    day: 1,
+    missions: 0,
+    deaths: 0,
+    todaySeconds: 0,
+    totalSeconds: 0,
+    isRunning: true,
+    lastDate: getTodayDateString(),
+    updatedAt: Date.now()
+  };
+
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if (saved && typeof saved === 'object') {
+      state = { ...state, ...saved };
+    }
+  } catch (e) {}
+
+  function checkCalendarRollover() {
+    const currentDate = getTodayDateString();
+    if (state.lastDate !== currentDate) {
+      state.lastDate = currentDate;
+      state.todaySeconds = 0;
+      return true;
+    }
+    return false;
+  }
+
+  if (checkCalendarRollover()) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (e) {}
+  }
+
+  const dayEl = document.getElementById('dayVal');
+  const todayEl = document.getElementById('todayVal');
+  const totalEl = document.getElementById('totalVal');
+  const missionsEl = document.getElementById('missionsVal');
+  const deathsEl = document.getElementById('deathsVal');
+  const timerBlock = document.getElementById('timerBlock');
+  const toggleBtn = document.getElementById('toggleBtn');
+
+  function pad(n) {
+    return String(n).padStart(2, '0');
+  }
+
+  function formatHMS(secs) {
+    const h = Math.floor(secs / 3600);
+    const m = Math.floor((secs % 3600) / 60);
+    const s = secs % 60;
+    return `${h}:${pad(m)}:${pad(s)}`;
+  }
+
+  function formatHM(secs) {
+    const h = Math.floor(secs / 3600);
+    const m = Math.floor((secs % 3600) / 60);
+    return `${h}:${pad(m)}`;
+  }
+
+  function animatePop(el) {
+    el.classList.remove('pop');
+    void el.offsetWidth;
+    el.classList.add('pop');
+    setTimeout(() => el.classList.remove('pop'), 160);
+  }
+
+  function render(popTarget) {
+    dayEl.textContent = state.day;
+    missionsEl.textContent = state.missions;
+    deathsEl.textContent = state.deaths ?? 0;
+    todayEl.textContent = formatHM(state.todaySeconds);
+    totalEl.textContent = formatHMS(state.totalSeconds);
+    timerBlock.classList.toggle('paused', !state.isRunning);
+    toggleBtn.textContent = state.isRunning ? 'השהה' : 'התחל';
+
+    if (popTarget === 'day') animatePop(dayEl);
+    if (popTarget === 'missions') animatePop(missionsEl);
+    if (popTarget === 'deaths') animatePop(deathsEl);
+  }
+
+  function persistAndBroadcast(popTarget) {
+    state.updatedAt = Date.now();
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (e) {}
+    if (channel) {
+      channel.postMessage({ type: 'STATE_UPDATE', state, popTarget });
+    }
+    render(popTarget);
+  }
+
+  toggleBtn.addEventListener('click', () => {
+    state.isRunning = !state.isRunning;
+    persistAndBroadcast();
+  });
+
+  document.getElementById('dayPlusBtn').addEventListener('click', () => {
+    state.day += 1;
+    state.todaySeconds = 0;
+    state.lastDate = getTodayDateString();
+    persistAndBroadcast('day');
+  });
+
+  document.getElementById('dayMinusBtn').addEventListener('click', () => {
+    state.day = Math.max(1, state.day - 1);
+    persistAndBroadcast('day');
+  });
+
+  document.getElementById('missionPlusBtn').addEventListener('click', () => {
+    state.missions += 1;
+    persistAndBroadcast('missions');
+  });
+
+  document.getElementById('missionMinusBtn').addEventListener('click', () => {
+    state.missions = Math.max(0, state.missions - 1);
+    persistAndBroadcast('missions');
+  });
+
+  document.getElementById('deathPlusBtn').addEventListener('click', () => {
+    state.deaths = (state.deaths ?? 0) + 1;
+    persistAndBroadcast('deaths');
+  });
+
+  document.getElementById('deathMinusBtn').addEventListener('click', () => {
+    state.deaths = Math.max(0, (state.deaths ?? 0) - 1);
+    persistAndBroadcast('deaths');
+  });
+
+  document.getElementById('resetTodayBtn').addEventListener('click', () => {
+    state.todaySeconds = 0;
+    state.lastDate = getTodayDateString();
+    persistAndBroadcast();
+  });
+
+  document.getElementById('resetAllBtn').addEventListener('click', () => {
+    state.day = 1;
+    state.missions = 0;
+    state.deaths = 0;
+    state.todaySeconds = 0;
+    state.totalSeconds = 0;
+    state.isRunning = false;
+    state.lastDate = getTodayDateString();
+    persistAndBroadcast('day');
+  });
+
+  if (channel) {
+    channel.onmessage = (ev) => {
+      if (ev.data && ev.data.type === 'STATE_UPDATE') {
+        state = { ...ev.data.state };
+        render(ev.data.popTarget);
+      }
+    };
+  }
+
+  window.addEventListener('storage', (ev) => {
+    if (ev.key === STORAGE_KEY && ev.newValue) {
+      try {
+        state = JSON.parse(ev.newValue);
+        render();
+      } catch (e) {}
+    }
+  });
+
+  setInterval(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const external = JSON.parse(raw);
+        if (external.updatedAt > state.updatedAt) {
+          state = external;
+          render();
+        }
+      }
+    } catch (e) {}
+  }, 300);
+
+  setInterval(() => {
+    const rolledOver = checkCalendarRollover();
+    if (state.isRunning) {
+      state.todaySeconds += 1;
+      state.totalSeconds += 1;
+      state.updatedAt = Date.now();
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (e) {}
+      if (channel) {
+        channel.postMessage({ type: 'TICK', state });
+      }
+      render();
+    } else if (rolledOver) {
+      persistAndBroadcast();
+    }
+  }, 1000);
+
+  render();
+})();
+</script>
+
+</body>
+</html>
